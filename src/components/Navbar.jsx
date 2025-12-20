@@ -1,42 +1,46 @@
-import { NavLink } from "react-router-dom";
+// src/components/Navbar.jsx
+import React from "react";
+import { Link } from "react-router-dom";
 
-export default function Navbar() {
+function Navbar() {
   return (
-    <header className="nav-header">
-      <div className="brand">
-        <span className="brand-mark">🎬</span>
-        <span className="brand-text">StreamList</span>
-      </div>
+    <nav
+      style={{
+        padding: "1rem",
+        display: "flex",
+        gap: "1.5rem",
+        background: "#222",
+        color: "#fff",
+        alignItems: "center"
+      }}
+    >
+      <Link to="/" style={linkStyle}>
+        Home
+      </Link>
 
-      <nav className="nav-links">
-        <NavLink
-          to="/streamlist"
-          className={({ isActive }) => (isActive ? "active" : "")}
-        >
-          StreamList
-        </NavLink>
+      <Link to="/about" style={linkStyle}>
+        About
+      </Link>
 
-        <NavLink
-          to="/movies"
-          className={({ isActive }) => (isActive ? "active" : "")}
-        >
-          Movies
-        </NavLink>
+      <Link to="/cart" style={linkStyle}>
+        Cart
+      </Link>
 
-        <NavLink
-          to="/cart"
-          className={({ isActive }) => (isActive ? "active" : "")}
-        >
-          Cart
-        </NavLink>
+      <Link to="/movies" style={linkStyle}>
+        Movies
+      </Link>
 
-        <NavLink
-          to="/about"
-          className={({ isActive }) => (isActive ? "active" : "")}
-        >
-          About
-        </NavLink>
-      </nav>
-    </header>
+      <Link to="/streamlist" style={linkStyle}>
+        Stream List
+      </Link>
+    </nav>
   );
 }
+
+const linkStyle = {
+  color: "#fff",
+  textDecoration: "none",
+  fontSize: "1.1rem"
+};
+
+export default Navbar;

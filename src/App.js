@@ -1,26 +1,30 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import StreamList from "./pages/StreamList";
-import Movies from "./pages/Movies";
-import Cart from "./pages/Cart";
-import About from "./pages/About";
-import "./App.css";
+// src/App.js
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-export default function App() {
+import Navbar from "./components/Navbar";
+import About from "./pages/About";
+import Cart from "./pages/Cart";
+import Movies from "./pages/Movies";
+import StreamList from "./pages/StreamList";
+
+function App() {
   return (
     <Router>
-      <div className="app-shell">
-        <Navbar />
-        <main className="page">
-          <Routes>
-            <Route path="/" element={<Navigate to="/streamlist" replace />} />
-            <Route path="/streamlist" element={<StreamList />} />
-            <Route path="/movies" element={<Movies />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/about" element={<About />} />
-          </Routes>
-        </main>
-      </div>
+      <Navbar />
+
+      <Routes>
+        {/* Home route (shows StreamList by default) */}
+        <Route path="/" element={<StreamList />} />
+
+        {/* Other routes */}
+        <Route path="/about" element={<About />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/movies" element={<Movies />} />
+        <Route path="/streamlist" element={<StreamList />} />
+      </Routes>
     </Router>
   );
 }
+
+export default App;

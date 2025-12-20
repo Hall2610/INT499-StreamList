@@ -90,3 +90,178 @@ button {
 button:hover { opacity: 0.92; }
 
 .hint { margin-top: 12px; color: #666; font-size: 14px; }
+.form-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.form-row input[type="text"] {
+  flex: 1;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid #d8d8d8;
+  font-size: 16px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0 0;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.done .title {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-input {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #d8d8d8;
+  font-size: 16px;
+}
+
+.empty {
+  opacity: 0.7;
+  padding: 10px 0;
+}
+
+.sr-only {
+  position: absolute;
+  left: -9999px;
+}
+.form-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.form-row input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #d8d8d8;
+  font-size: 16px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin-top: 16px;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  background: white;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.done .title {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+.icon-btn:hover {
+  background: #f0f0f0;
+}
+
+.icon-btn.danger:hover {
+  background: #ffe6e6;
+}
+
+.material-symbols-outlined {
+  font-size: 22px;
+}
+
+.edit-input {
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #d8d8d8;
+}
+
+.empty {
+  opacity: 0.7;
+  padding: 10px 0;
+}
+
+.sr-only {
+  position: absolute;
+  left: -9999px;
+}
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 22px;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+
+  /* REQUIRED for visibility */
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+
+  color: #000;
+}
