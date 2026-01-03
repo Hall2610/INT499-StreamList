@@ -1,46 +1,39 @@
 // src/components/Navbar.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import "../pages/shop.css";
 
 function Navbar() {
+  const { cartCount } = useCart();
+
   return (
-    <nav
-      style={{
-        padding: "1rem",
-        display: "flex",
-        gap: "1.5rem",
-        background: "#222",
-        color: "#fff",
-        alignItems: "center"
-      }}
-    >
-      <Link to="/" style={linkStyle}>
+    <nav className="nav">
+      <Link to="/" className="nav-link">
         Home
       </Link>
 
-      <Link to="/about" style={linkStyle}>
+      <Link to="/about" className="nav-link">
         About
       </Link>
 
-      <Link to="/cart" style={linkStyle}>
-        Cart
+      <Link to="/subscriptions" className="nav-link">
+        Subscriptions
       </Link>
 
-      <Link to="/movies" style={linkStyle}>
+      <Link to="/cart" className="nav-link">
+        Cart <span className="badge">{cartCount}</span>
+      </Link>
+
+      <Link to="/movies" className="nav-link">
         Movies
       </Link>
 
-      <Link to="/streamlist" style={linkStyle}>
+      <Link to="/streamlist" className="nav-link">
         Stream List
       </Link>
     </nav>
   );
 }
-
-const linkStyle = {
-  color: "#fff",
-  textDecoration: "none",
-  fontSize: "1.1rem"
-};
 
 export default Navbar;

@@ -1,0 +1,185 @@
+/* src/pages/shop.css */
+.shop {
+  padding: 1.25rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.shop-header {
+  margin-bottom: 1rem;
+}
+
+.muted {
+  opacity: 0.8;
+}
+
+.warning {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: #3a2d00;
+  color: #ffe7a3;
+  border: 1px solid #a67c00;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1rem;
+}
+
+.product {
+  border: 1px solid #333;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #1b1b1b;
+  color: #fff;
+}
+
+.product-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: #111;
+}
+
+.product-body {
+  padding: 0.9rem;
+  position: relative;
+}
+
+.price {
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+.btn {
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid #444;
+  background: #2a2a2a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn:hover {
+  opacity: 0.95;
+}
+
+.btn.danger {
+  border-color: #6b1a1a;
+  background: #3a1212;
+}
+
+.pill {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  border: 1px solid #444;
+  background: #111;
+}
+
+.pill.subscription {
+  border-color: #2e8b57;
+}
+
+.pill.accessory {
+  border-color: #1e90ff;
+}
+
+.cart-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 110px 1fr 220px;
+  gap: 1rem;
+  border: 1px solid #333;
+  border-radius: 14px;
+  padding: 0.9rem;
+  background: #1b1b1b;
+  color: #fff;
+  align-items: center;
+}
+
+.cart-img {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #111;
+}
+
+.cart-actions {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: end;
+}
+
+.qty {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.qty input {
+  width: 90px;
+  padding: 0.4rem;
+  border-radius: 10px;
+  border: 1px solid #444;
+  background: #111;
+  color: #fff;
+}
+
+.cart-summary {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.card {
+  border: 1px solid #333;
+  border-radius: 14px;
+  background: #1b1b1b;
+  color: #fff;
+  padding: 1rem;
+}
+
+.summary-card {
+  min-width: 300px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.75rem 0 1rem;
+}
+
+.nav {
+  padding: 1rem;
+  display: flex;
+  gap: 1.25rem;
+  background: #222;
+  color: #fff;
+  align-items: center;
+}
+
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.05rem;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #444;
+  font-size: 0.85rem;
+}
