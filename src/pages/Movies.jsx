@@ -1,81 +1,101 @@
 // src/pages/Movies.jsx
-import React from "react";
+import { useEffect, useRef, useState } from "react";
 import { searchMovies } from "../api/tmdb";
 import useLocalStorage from "../useLocalStorage";
 
 function Movies() {
   const [query, setQuery] = useLocalStorage("tmdbQuery", "");
   const [results, setResults] = useLocalStorage("tmdbResults", []);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState(null);
-  const [restored, setRestored] = React.useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [restored, setRestored] = useState(false);
 
-  // Detect restored session data (useful for your video narration)
-  React.useEffect(() => {
+  // Prevent the "restored" effect from running more than once
+  const didCheckRestore = useRef(false);
+
+  // Prevent older searches from overwriting newer results (race condition)
+  const activeRequestId = useRef(0);
+
+  useEffect(() => {
+    if (didCheckRestore.current) return;
+    didCheckRestore.current = true;
+
     const hasStoredQuery = typeof query === "string" && query.trim().length > 0;
     const hasStoredResults = Array.isArray(results) && results.length > 0;
 
     if (hasStoredQuery || hasStoredResults) {
       setRestored(true);
     }
-    // Run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [query, results]);
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const trimmed = query.trim();
+    const trimmed = typeof query === "string" ? query.trim() : "";
     if (!trimmed) {
       setError("Please enter a search term.");
       return;
     }
+
+    const requestId = ++activeRequestId.current;
 
     setLoading(true);
     setError(null);
 
     try {
       const movies = await searchMovies(trimmed);
+
+      // If another request started after this one, ignore this response
+      if (requestId !== activeRequestId.current) return;
+
       setResults(Array.isArray(movies) ? movies : []);
-      setRestored(false); // this is a new search, not a restored view
+      setRestored(false); // new search replaces restored state
     } catch (err) {
+      if (requestId !== activeRequestId.current) return;
+
       console.error(err);
-      setError(err.message || "Something went wrong");
+      const message =
+        (err && typeof err === "object" && "message" in err && err.message) ||
+        "Something went wrong.";
+      setError(message);
     } finally {
-      setLoading(false);
+      if (requestId === activeRequestId.current) {
+        setLoading(false);
+      }
     }
   }
 
   function handleClear() {
+    // This clears both UI state and persisted localStorage values via your hook
     setQuery("");
     setResults([]);
     setError(null);
     setRestored(false);
-
-    // Extra explicit clearing for demonstration clarity
-    localStorage.removeItem("tmdbQuery");
-    localStorage.removeItem("tmdbResults");
   }
 
+  const trimmedQuery = typeof query === "string" ? query.trim() : "";
   const showNoResults =
-    !loading &&
-    !error &&
-    Array.isArray(results) &&
-    results.length === 0 &&
-    query.trim().length > 0;
+    !loading && !error && Array.isArray(results) && results.length === 0 && trimmedQuery.length > 0;
 
   return (
     <div style={{ padding: "1rem" }}>
       <h1>Movie Search</h1>
 
+      {/* Accessibility: announce restored state */}
       {restored && (
-        <p style={{ marginTop: "0.5rem" }}>
+        <p style={{ marginTop: "0.5rem" }} aria-live="polite">
           Restored your previous search from localStorage.
         </p>
       )}
 
       <form onSubmit={handleSubmit} style={{ marginBottom: "1rem" }}>
+        {/* Label improves accessibility and testing */}
+        <label htmlFor="movie-search" style={{ display: "block", marginBottom: "0.25rem" }}>
+          Search
+        </label>
+
         <input
+          id="movie-search"
           type="text"
           value={query}
           onChange={(e) => {
@@ -89,20 +109,22 @@ function Movies() {
             marginRight: "0.5rem",
           }}
         />
+
         <button type="submit" disabled={loading}>
           {loading ? "Searching..." : "Search"}
         </button>
 
-        <button
-          type="button"
-          onClick={handleClear}
-          style={{ marginLeft: "0.5rem" }}
-        >
+        <button type="button" onClick={handleClear} style={{ marginLeft: "0.5rem" }}>
           Clear
         </button>
       </form>
 
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      {error && (
+        <p style={{ color: "red" }} aria-live="assertive">
+          Error: {error}
+        </p>
+      )}
+
       {showNoResults && <p>No results found for that search.</p>}
 
       <div
@@ -115,14 +137,14 @@ function Movies() {
         {Array.isArray(results) &&
           results.map((movie) => {
             const overview =
-              typeof movie.overview === "string" ? movie.overview.trim() : "";
+              typeof movie?.overview === "string" ? movie.overview.trim() : "";
 
             const shortOverview =
               overview.length > 150 ? overview.slice(0, 150) + "..." : overview;
 
             return (
               <div
-                key={movie.id}
+                key={movie?.id ?? `${movie?.title ?? "movie"}-${Math.random()}`}
                 style={{
                   border: "1px solid #ddd",
                   borderRadius: "8px",
@@ -130,15 +152,16 @@ function Movies() {
                   boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
                 }}
               >
-                {movie.poster_path ? (
+                {movie?.poster_path ? (
                   <img
                     src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
-                    alt={movie.title || "Movie poster"}
+                    alt={movie?.title ? `${movie.title} poster` : "Movie poster"}
                     style={{
                       width: "100%",
                       borderRadius: "4px",
                       marginBottom: "0.5rem",
                     }}
+                    loading="lazy"
                   />
                 ) : (
                   <div
@@ -158,16 +181,14 @@ function Movies() {
                   </div>
                 )}
 
-                <h3 style={{ margin: "0.25rem 0" }}>
-                  {movie.title || "Untitled"}
-                </h3>
+                <h3 style={{ margin: "0.25rem 0" }}>{movie?.title || "Untitled"}</h3>
 
                 <p style={{ margin: "0.25rem 0" }}>
-                  Release: {movie.release_date || "N/A"}
+                  Release: {movie?.release_date || "N/A"}
                 </p>
 
                 <p style={{ margin: "0.25rem 0" }}>
-                  Rating: {movie.vote_average ?? "N/A"}
+                  Rating: {movie?.vote_average ?? "N/A"}
                 </p>
 
                 <p style={{ fontSize: "0.85rem" }}>
