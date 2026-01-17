@@ -1,9 +1,11 @@
 // src/pages/Cart.jsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import "./shop.css";
 
 export default function Cart() {
+  const navigate = useNavigate();
   const { items, totalPrice, removeFromCart, updateQuantity, clearCart } =
     useCart();
 
@@ -23,16 +25,28 @@ export default function Cart() {
           <div className="cart-list">
             {items.map((item) => (
               <div className="cart-item" key={item.id}>
-                <img className="cart-img" src={item.img} alt={item.name} />
+                <img
+                  className="cart-img"
+                  src={item.img}
+                  alt={item.name || item.service || "Cart Item"}
+                />
 
                 <div className="cart-info">
-                  <h3 className="cart-title">{item.name}</h3>
-                  {item.description ? <p className="muted">{item.description}</p> : null}
+                  <h3 className="cart-title">
+                    {item.name || item.service || "Item"}
+                  </h3>
+
+                  {item.description ? (
+                    <p className="muted">{item.description}</p>
+                  ) : null}
+
                   <p className="muted">Type: {item.type}</p>
                 </div>
 
                 <div className="cart-actions">
-                  <p className="price">${(item.price * item.quantity).toFixed(2)}</p>
+                  <p className="price">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </p>
 
                   <label className="qty">
                     Qty
@@ -40,7 +54,7 @@ export default function Cart() {
                       type="number"
                       min="1"
                       value={item.quantity}
-                      onChange={(e) => updateQuantity(item.id, e.target.value)}
+                      onChange={(e) => updateQuantity(item.id, Number(e.target.value))}
                     />
                   </label>
 
@@ -58,10 +72,15 @@ export default function Cart() {
           <div className="cart-summary">
             <div className="card summary-card">
               <h2>Order Summary</h2>
+
               <div className="summary-row">
                 <span>Total</span>
                 <strong>${totalPrice.toFixed(2)}</strong>
               </div>
+
+              <button className="btn" onClick={() => navigate("/credit-card")}>
+                Checkout
+              </button>
 
               <button className="btn danger" onClick={clearCart}>
                 Clear Cart

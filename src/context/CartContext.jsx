@@ -2,86 +2,61 @@ import React from "react";
 
 const CartContext = React.createContext(null);
 
-const CART_KEY = "teamCartItems";
+const STORAGE_KEY = "streamlist_cart_v1";
 
-function safeParse(json) {
+function safeParse(json, fallback) {
   try {
     const parsed = JSON.parse(json);
-    return Array.isArray(parsed) ? parsed : [];
+    return parsed ?? fallback;
   } catch {
-    return [];
+    return fallback;
   }
 }
 
-function loadCart() {
-  const raw = localStorage.getItem(CART_KEY);
-  return raw ? safeParse(raw) : [];
-}
-
-function saveCart(items) {
-  localStorage.setItem(CART_KEY, JSON.stringify(items));
-}
-
 export function CartProvider({ children }) {
-  const [items, setItems] = React.useState(() => loadCart());
-  const [warning, setWarning] = React.useState("");
+  const [items, setItems] = React.useState(() => {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? safeParse(raw, []) : [];
+  });
 
   React.useEffect(() => {
-    saveCart(items);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
-  const cartCount = React.useMemo(() => {
-    return items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  const totalItems = React.useMemo(() => {
+    return items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
   }, [items]);
 
   const totalPrice = React.useMemo(() => {
-    return items.reduce(
-      (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
-      0
-    );
+    return items.reduce((sum, item) => {
+      const price = Number(item.price) || 0;
+      const qty = Number(item.quantity) || 0;
+      return sum + price * qty;
+    }, 0);
   }, [items]);
 
   function addToCart(product) {
-    setWarning("");
-
-    if (!product || typeof product.id === "undefined") return;
-
-    const type = product.type;
-
-    if (type === "subscription") {
-      const hasSubscription = items.some((i) => i.type === "subscription");
-      if (hasSubscription) {
-        setWarning("Only one subscription can be added at a time.");
-        return;
-      }
-    }
-
     setItems((prev) => {
-      const existing = prev.find((p) => p.id === product.id);
-
-      if (existing) {
-        if (type === "subscription") {
-          setWarning("That subscription is already in your cart.");
+      // Restriction: only one subscription at a time
+      if (product.type === "subscription") {
+        const hasSubscription = prev.some((p) => p.type === "subscription");
+        if (hasSubscription) {
+          // Keep state unchanged; UI should show warning in Subscriptions page
           return prev;
         }
+      }
 
+      const existing = prev.find((p) => p.id === product.id);
+      if (existing) {
+        // Accessories can be added multiple times: just increment quantity
         return prev.map((p) =>
-          p.id === product.id ? { ...p, quantity: (p.quantity || 1) + 1 } : p
+          p.id === product.id
+            ? { ...p, quantity: (Number(p.quantity) || 1) + 1 }
+            : p
         );
       }
 
-      return [
-        ...prev,
-        {
-          id: product.id,
-          name: product.service || product.name || "Item",
-          description: product.serviceInfo || product.description || "",
-          price: Number(product.price) || 0,
-          img: product.img || "",
-          type: product.type || "accessory",
-          quantity: 1,
-        },
-      ];
+      return [...prev, { ...product, quantity: 1 }];
     });
   }
 
@@ -89,29 +64,21 @@ export function CartProvider({ children }) {
     setItems((prev) => prev.filter((p) => p.id !== id));
   }
 
-  function updateQuantity(id, newQuantity) {
-    const q = Number(newQuantity);
-
-    if (Number.isNaN(q)) return;
-
-    setItems((prev) => {
-      if (q <= 0) return prev.filter((p) => p.id !== id);
-
-      return prev.map((p) => (p.id === id ? { ...p, quantity: q } : p));
-    });
+  function updateQuantity(id, value) {
+    const qty = Math.max(1, Number(value) || 1);
+    setItems((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, quantity: qty } : p))
+    );
   }
 
   function clearCart() {
-    setWarning("");
     setItems([]);
-    localStorage.removeItem(CART_KEY);
   }
 
   const value = {
     items,
-    cartCount,
+    totalItems,
     totalPrice,
-    warning,
     addToCart,
     removeFromCart,
     updateQuantity,
@@ -123,6 +90,8 @@ export function CartProvider({ children }) {
 
 export function useCart() {
   const ctx = React.useContext(CartContext);
-  if (!ctx) throw new Error("useCart must be used within CartProvider");
+  if (!ctx) {
+    throw new Error("useCart must be used within CartProvider");
+  }
   return ctx;
 }
